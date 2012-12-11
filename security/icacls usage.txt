@@ -1,0 +1,9 @@
+Check Permissions
+Force Remove
+THen add Read + Execute
+Validate Permissions
+
+icacls putty.exe
+icacls putty.exe /deny tsa_admin:(F)
+icacls putty.exe /grant:r tsa_admin:(RX)
+icacls putty.exe

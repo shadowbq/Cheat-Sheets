@@ -1,0 +1,29 @@
+Simple ADS Streams
+
+C:\WINDOWS>type notepad.exe>test.txt:note.exe
+
+C:\WINDOWS>start .\test.txt:note.exe
+
+
+Using a directory
+
+You can make an AltDS in not only files, but also directories, here is a quick example:
+
+
+C:\>md stuff
+C:\>cd stuff
+
+C:\stuff>echo Hide stuff in stuff>:hide.txt
+
+C:\stuff>dir
+Volume in drive C has no label.
+Volume Serial Number is 40CC-B506
+
+Directory of C:\stuff
+
+09/28/2004 10:19 AM <DIR> .
+09/28/2004 10:19 AM <DIR> ..
+0 File(s) 0 bytes
+2 Dir(s) 12,253,208,576 bytes free
+
+C:\stuff>notepad :hide.txt

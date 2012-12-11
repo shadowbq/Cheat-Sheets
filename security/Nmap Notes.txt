@@ -1,0 +1,78 @@
+./msfconsole
+
+db_create dvtarget
+db_nmap -sV <target IP> -O -v -f T 1
+db_autopwn -p -t -e
+
+nmap -sV <target IP> -O -v -f T 1
+
+No Ping Syn Scan Version the service and Guess the OS.
+Nmap -Pn -sS -sV -O 192.168.111.0/24
+
+Frag Syn
+nmap -fsp 21,22,23,25,80,445,8080,8000,443 foo.com/24
+
+Ping Sweep
+nmap -P '193.14.[12-30].*
+
+TCP Scan Common Fast
+nmap -F foo.com/24
+
+NMAP Host Discovery
+
+-sL (List Scan)
+-Pn (skip ping) option.
+-sn (No port scan) This option tells Nmap not to do a port scan after host discovery, and only print out the available hosts that responded to the scan. 
+    In previous releases of Nmap, -sn was known as -sP.
+-Pn (No ping) (Assume host is up)
+    For machines on a local ethernet network, ARP scanning will still be performed (unless --disable-arp-ping or --send-ip is specified) because Nmap needs MAC addresses to further scan target hosts. 
+	In previous versions of Nmap, -Pn was -P0 and -PN. 
+-PS <port list> (TCP SYN Ping) [ -PS22-25,80,113,1050,35000]
+-PA <port list> (TCP ACK Ping)
+    The TCP ACK ping is quite similar to the just-discussed SYN ping.  So remote hosts should always respond with a RST packet, disclosing their existence in the process.
+	The -PA option uses the same default port as the SYN probe (80) and can also take a list of destination ports in the same format.
+-PU <port list> (UDP Ping)
+-PY <port list> (SCTP INIT Ping)
+-PE; -PP; -PM (ICMP Ping Types)
+
+	-PE While echo request is the standard ICMP ping query
+	-PP Timestamp and 
+	-PM address mask queries can be sent with the -PP and -PM options, respectively. 
+		A timestamp reply (ICMP code 14) or address mask reply (code 18) discloses that the host is available. 
+		These two queries can be valuable when administrators specifically block echo request packets while forgetting that other ICMP queries can be used for the same purpose.
+	
+-PO <protocol list> (IP Protocol Ping)
+-PR (ARP Ping)
+--disable-arp-ping (No ARP or ND Ping)
+--disable-arp-ping option.
+--traceroute (Trace path to host)
+   It works with all scan types except connect scans (-sT) and idle scans (-sI). All traces use Nmap's dynamic timing model and are performed in parallel. 
+-n (No DNS resolution)
+-R (DNS resolution for all targets)
+--dns-servers <server1>[,<server2>[,...]] (Servers to use for reverse DNS queries) 
+
+NAMP Port Scanning Notes
+
+ -sS (TCP SYN scan)
+    SYN scan is the default and most popular scan option for good reasons.
+-sT (TCP connect scan)
+-sU (UDP scans)
+--host-timeout to skip slow hosts.
+-sY (SCTP INIT scan)
+-sN; -sF; -sX (TCP NULL, FIN, and Xmas scans)
+    Null scan (-sN)
+    FIN scan (-sF)
+    Xmas scan (-sX)
+-sA (TCP ACK scan)
+-sW (TCP Window scan)
+
+    Window scan is exactly the same as ACK scan except that it exploits an implementation detail of certain systems to differentiate open ports from closed ones, rather than always printing unfiltered when a RST is returned. It does this by examining the TCP Window field of the RST packets returned. On some systems, open ports use a positive window size (even for RST packets) while closed ones have a zero window. So instead of always listing a port as unfiltered when it receives a RST back, Window scan lists the port as open or closed if the TCP Window value in that reset is positive or zero, respectively.
+
+    This scan relies on an implementation detail of a minority of systems out on the Internet, so you can't always trust it. Systems that don't support it will usually return all ports closed. Of course, it is possible that the machine really has no open ports. If most scanned ports are closed but a few common port numbers (such as 22, 25, 53) are filtered, the system is most likely susceptible. Occasionally, systems will even show the exact opposite behavior. If your scan shows 1,000 open ports and three closed or filtered ports, then those three may very well be the truly open ones.
+-sM (TCP Maimon scan)
+   FIN/ACK. According to RFC 793 (TCP), a RST packet should be generated in response to such a probe whether the port is open or closed. BSD-derived systems simply drop the packet if the port is open.
+--scanflags (Custom TCP scan)
+-sZ (SCTP COOKIE ECHO scan)
+-sO (IP protocol scan)
+
+-b <FTP relay host> (FTP bounce scan) 
