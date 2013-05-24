@@ -1,0 +1,63 @@
+... Debugs ....
+Core dumps no longer unlimited by default.
+"ulimit -c unlimited " - set up umlimited core dumps for gdb.
+
+Enable Debug Flag GDB traces
+"cc  -ggdb overflow.c -o overflow.bin"
+
+-ggdb
+    Produce debugging information for use by GDB. This means to use
+the most expressive format available (DWARF 2, stabs, or the native
+format if neither of those are supported), including GDB extensions if
+at all possible.
+
+...... Vulnerability Compilation Bake Ins. ..........
+NO Stack protector  (Cannery Code) (stackpolice)
+http://www.trl.ibm.com/projects/security/ssp/
+
+>> Stack Smashing Protection (SSP) / ProPolice
+>>   -fstack-protector - enables stack protection for functions using character arrays
+>>   -fno-stack-protector - disables stack protection
+
+"cc -mpreferred-stack-boundary=2 -fno-stack-protector overflow.c -o
+overflow.bin"
+
+Buffer & Format String Vulnerability Checks /  -D_FORTIFY_SOURCE
+(http://gcc.gnu.org/ml/gcc-patches/2004-09/msg02055.html)
+
+"gcc -O1 -D_FORTIFY_SOURCE=0 -o sts sts.c"
+
+If a binary is compiled with -D_FORTIFY_SOURCE=n
+  n = 2 / format srings (%n) and buffer checks
+  n = 1 / buffer overflow checks only
+
+Address Space Layout Randomization (ASLR)
+(http://en.wikipedia.org/wiki/Address_space_layout_randomization)
+
+ASLR is in vanilla linux kernels >= 2.6
+"sysctl -w kernel.randomize_va_space=0"
+
+Exec-Shield (http://en.wikipedia.org/wiki/Exec_Shield)
+
+In order to disable exec-shield: (both required)
+
+"sysctl -w kernel.exec-shield=0"
+"sysctl -w kernel.exec-shield-randomize=0"
+
+
+..........Shell Code.......
+Setting Executable Stack for ShellCode.  (Stack Execution protection /
+Mem range protection)
+gcc '-Wl, -z, execstack' shellcode.c -o shellcode.bin
+
+gcc -z execstack ....
+
+GNU_STACK ELF markings
+    -z execstack - enable executable stack
+    -z noexecstack - disable executable stack (default)
+
+ =or=
+(after compilation) "execstack --set-execstack ./shellcode.bin"
+
+execstack - tool to set, clear, or query executable stack flag of ELF
+binaries and shared libraries
