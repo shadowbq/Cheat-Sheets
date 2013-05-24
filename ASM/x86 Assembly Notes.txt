@@ -1,0 +1,101 @@
+Call-er Save Registers (If the Caller wants to keep these, it needs to push then call then pop these back.)
+EAX, ECX, EDX
+
+Call-EE Save Registers (If the callee needs to use more registers than are saved by the caller, the callee needs to push then use then pop them back)
+EBX, EBP, ESI, EDI 
+
+---------------
+
+High Order Registers (32/16/8)
+EAX, ECX, EDX, (caller)
+EBX (callee)
+
+General Purpose (32/16)
+ESP, EBP, ESI, EDI, EIP
+
+--------------
+
+EFL is the FLAG Mask
+
+---------------
+
+EIP - Pointer to next instruction to execute (“instruction pointer”) (where we are in the code!)
+
+ESP - Stack Pointer (where are we on the stack!) [esp points to the top of the stack, the lowest address which is being used]
+
+EBP - Stack Location of the Beginning of the current Function. (Stack References!)
+
+  EBP + Constant = Variable pass to Funciton (EBP + 0x0C) is A, (EBP + 0x08 is B)  { mov eax, [ebp+8] }
+  
+  EBP - Constant = Local Variables 
+
+  EBP + 0x04 is always the very next instruction/code location (0040XXXX) after the function call! 
+
+  Variables passed to the function are from right to left.
+  
+  Example:
+  Funct Foo (A, B) 
+  
+  B on Stack
+  A on Stack
+  Foo on Stack
+  Call Foo.
+  
+  memcpy(&a, &b, sizeof(mystruct_t)); 
+  0040100D  push        8    
+  0040100F  lea         eax,[b] 
+  00401012  push        eax  
+  00401013  lea         ecx,[a] 
+  00401016  push        ecx  
+  00401017  call        memcpy (401028h)
+
+EAX - is always the return for the Function, most common variable or default variable
+
+ECX - is generally a counter for loops, or as a second local variable store after EAX 
+
+EDX - is used to extend EAX in 64 bit calculations, or as a third local variable store after ECX 
+
+Strings:: (rep stos instructions)
+
+ESI - Source pointer for string operations
+
+EDI - Destination pointer for string operations  
+
+#Stack Frame Checks
+0x0CCCCCCC is injected as a padding at the top and bottom of allocated spaces for { char buf[XX]; }
+The entire usable BUF is also pre-filled with 0x0CCCCCCC when initialized as well.
+RTC_CheckStackVars is the sanity check for the buffer at function return/teardown.
+
+Stack::
+
+Stacks tend to be around (0x0012FF6C)
+
+By convention the stack grows toward lower memory addresses. A stack is a Last-In-First-Out (LIFO/FILO) 
+
+4 byte Integer / Hex Display / 1 Column - ANSI (Follow ESP as current or EBP as a Function)
+
+Instructions / Code ::
+
+This is the Code.. PUSH POP ect.. things to do, not the Stack storage variables
+
+Windows Instructions tend to put them around 0x00401010 
+
+#Powers of 2 (2s Complements)
+
+SHL is like a Multiply Instruction (Shift Logical Left) - Bit shifting 0101 (5) -> 1010 (10)[0xA]
+SHR is like a Divide Instruction (Shift Logical Right) - Bit shifting 1010 (10)[0xA] -> 0101 (5)
+
+shr 0x16,3 -> 16 / (2^3) = 16 / 8 = 2
+(b)10000 -(shr3)-> (b)00010 = 2
+
+#(Truth Table Checks)
+
+# Common Way to see if the memory location is aligned to the 4 byte DWORD
+test edi,3   # Check if EDI is a multiple of 4 ?  (Sets ZeroFlag)
+and  edx,3   # Same thing, just puts it into EDX  (Sets ZeroFlag)
+
+EDI/EDX = 8
+test & and return
+EDI = 8
+EDX = 0
+ZF = 1
