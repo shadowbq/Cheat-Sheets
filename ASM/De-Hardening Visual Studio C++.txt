@@ -1,0 +1,29 @@
+De-Harding Visual Studio C++ 2008 Express Edition for Easy Disassembly and Insecurity
+
+# Remove Debug Assembly Instructions
+
+Configuration Properties-> C/C++ -> General -> Debug Information Format (-> "Program Database /Zi")
+
+# Disable Exceptions 
+
+Configuration Properties-> C/C++ -> Code Generation -> Enable C++ Exceptions (-> "No")
+
+# Disable Buffer Security Check  
+
+Configuration Properties-> C/C++ -> Code Generation -> Buffer Security Check (-> "No /GS-")
+
+# Disable Stack Frame Checks (0x0CCCCCCC)
+
+Configuration Properties-> C/C++ -> Code Generation -> Basic Runtime Checks (-> "Default") 
+
+# Simplify Runtime Library
+
+Configuration Properties-> C/C++ -> Code Generation -> Runtime Library (-> "Multi-threaded Debug DLL ( /MDd )")
+
+# Switch to C code from C++ (simplier ASM)
+
+Configuration Properties-> C/C++ -> Advanced -> Compile As (-> "Compile as C Code (/TC)")
+
+# Linker Simplification (Directly call the sub instead of proxy calls to subs)
+
+Configuration Properties-> Linker -> General -> Enable Incremental Linking (-> "No (/INCREMENTAL:NO)")
