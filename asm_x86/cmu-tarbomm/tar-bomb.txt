@@ -1,0 +1,191 @@
+Bomb:
+C program with six / seven input phases
+Each phase expects student to type a specific string.
+ 
+Wrong string: bomb explodes by printing BOOM!
+Correct string: phase defused
+
+In either case, bomb sends message to grading server
+Goal: Defuse the bomb by defusing all six phases.
+ 
+For fun, we include an unadvertised seventh
+secret phase 
+
+The challenge:
+ 
+To defuse their bomb, students must disassemble and
+reverse engineer this binary
+
+Properties of Bomb Phases
+
+Phases test understanding of different C constructs
+and how they are compiled to machine code 
+Phase 1: string comparison
+Phase 2: loop
+Phase 3: switch statement/jump table
+Phase 4: recursive call
+Phase 5: pointers
+Phase 6: linked list/pointers/structs
+ 
+Secret phase: binary search (biggest challenge is figuring
+out how to reach phase)
+
+Phases start out easy and get progressively harder
+Let’s defuse a bomb phase!
+
+08048b48 <phase_2>:
+... # function prologue not shown
+8048b50: mov 0x8(%ebp),%edx
+8048b53: add $0xfffffff8,%esp
+8048b56: lea 0xffffffe8(%ebp),%eax
+8048b59: push %eax
+8048b5a: push %edx
+8048b5b: call 8048f48 <read_six_nums>
+8048b60: mov $0x1,%ebx
+8048b68: lea 0xffffffe8(%ebp),%esi
+8048b70: mov 0xfffffffc(%esi,%ebx,4),%eax
+8048b74: add $0x5,%eax
+8048b77: cmp %eax,(%esi,%ebx,4)
+8048b7a: je 8048b81 <phase_2+0x39>
+8048b7c: call 804946c <explode_bomb>
+8048b81: inc %ebx
+8048b82: cmp $0x5,%ebx
+8048b85: jle 8048b70 <phase_2+0x28>
+...# function epilogue not shown
+8048b8f: ret
+
+# else explode!
+# LOOP: eax = num[i-1]
+# then goto LOOP:
+# edx = &str
+# eax = &num[] on stack
+# push function args
+# rd 6 ints from str 2 num
+# i = 1
+# esi = &num[] on stack
+# eax = num[i-1] + 5
+# if num[i-1] + 5 == num[i]
+# then goto OK:
+# OK: i++
+# if (i <= 5)
+# YIPPEE!
+
+Source Code for Bomb Phase
+
+/*
+* phase2b.c - To defeat this stage the user must enter arithmetic
+* sequence of length 6 and delta = 5.
+*/
+
+void phase_2(char *input)
+{
+  int ii;
+  int numbers[6];
+  read_six_numbers(input, numbers);
+  for (ii = 1; ii < 6; ii++) {
+    if (numbers[ii] != numbers[ii-1] + 5)
+    explode_bomb();
+  }
+}
+
+NOTES: #######
+
+Phase 1 - Strings
+
+Public speaking is very easy.
+
+EDX
+(gdb) x/s 0x804b6d0
+0x804b6d0 <input_strings+80>:	 "input"
+
+read six numbers 
+%d %d %d %d %d %d
+
+0x8048fd8 read_six_numbers
+
+DWORD PTR [ebp-0x18],0x1  
+first is 1 = input?
+
+move 1 into ebx
+
+(gdb) x/s 0x804b680
+0x804b680 <input_strings>:	 "Public speaking is very easy."
+0x08048b59 in phase_2 ()
+
+eax = {0xbffff2d0} -> 0x804b680 -> "Public speaking is very easy." 29
+edx = 0x804b6d0 -> "input"
+
+call read six
+
+Phase 1 spoil - combo: Public speaking is very easy.
+
+Phase 2 - Loops
+
+Phase 2 - Step 1 
+
+ecx = edx
+   804 "input"
+edx = eax 
+   0xbff "public"
+
+eax = 
+Push...
+(gdb) x/s 0x0804b680+0x14
+0x804b694 <input_strings+20>:	 "ery easy."  {0xbffff2e4}9
+
+(gdb) x/s 0x0804b680+0x10
+0x804b690 <input_strings+16>:	 "is very easy." {0xbffff2e0}13
+
+(gdb) x/s 0x0804b680+0xc
+0x804b68c <input_strings+12>:	 "ing is very easy." {0xbffff2dc} 17
+
+(gdb) x/s 0x0804b680+0x8
+0x804b688 <input_strings+8>:	 "peaking is very easy."  {0xbffff2d8} 21
+
+(gdb) x/s 0x0804b680+0x4
+0x804b684 <input_strings+4>:	 "ic speaking is very easy." {0xbffff2d4} 25
+
+push edx "full public string"
+
+push 8049b1b -> 0x8049b1b:	 "%d %d %d %d %d %d"
+
+29 25 21 17 13 9 (Wrong)
+
+1 1 1 1 1 1 (trying..)
+
+push ecx "input"
+
+sscanf ()
+
+ int sscanf(const char *str, const char *format, ...);
+
+if return of scanf is > 5 move on.. 
+  
+Phase 2 - step 2
+
+combo:  1 
+
+Looping Start
+  
+ebx = 1
+esi = {0xbffff2d0} -> 1
+eax = 2
+
+eax = esi+ebx*4-0x4   ===  0xbffff2d0 + 4 - 4 ===> 0xbffff2d0
+
+if eax = esi + ebx * 4 move on.. 
+
+if 0xbffff2d0 = 0xbffff2d4 move on .. 
+
+if ibx less than 5 loop
+
+1x1 = 1
+1x2 = 2
+2x3 = 6
+6x4 = 24
+24x5  = 120
+120x6 = 720
+
+Looping Stop
+
+Phase 2 SPOIL - combo: 1 2 6 24 120 720

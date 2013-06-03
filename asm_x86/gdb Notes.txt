@@ -1,0 +1,50 @@
+GDB Notes.
+
+–  gdb <program name> -x <command file> 
+–  gdb Example1 -x ~/.gdbcmds
+
+#Common Commands file. (.gdbcmds)
+
+display/10i $eip 
+display/x $eax 
+display/x $ebx 
+display/x $ecx 
+display/x $edx 
+display/x $edi 
+display/x $esi 
+display/x $ebp 
+display/16xw $esp 
+break main 
+
+## Gives a common display like
+
+(gdb) run
+Starting program: /../example 
+
+Breakpoint 1, main (argc=1, argv=0xbffff334) at Example2.c:8
+8		a = atoi(argv[1]);
+9: x/16xw $esp
+0xbffff270:	0xffffffff	0xb7e551a6	0xb7fc2ff4	0xb7e55235
+0xbffff280:	0xb7fed270	0x00000000	0x08048429	0xb7fc2ff4
+0xbffff290:	0x08048420	0x00000000	0x00000000	0xb7e3b4d3
+0xbffff2a0:	0x00000001	0xbffff334	0xbffff33c	0xb7fdc858
+8: /x $ebp = 0xbffff298
+7: /x $esi = 0x0
+6: /x $edi = 0x0
+5: /x $edx = 0xbffff2c4
+4: /x $ecx = 0xbffff334
+3: /x $ebx = 0xb7fc2ff4
+2: /x $eax = 0x1
+1: x/10i $eip
+=> 0x80483ea <main+9>:	mov    0xc(%ebp),%eax
+   0x80483ed <main+12>:	add    $0x4,%eax
+   0x80483f0 <main+15>:	mov    (%eax),%eax
+   0x80483f2 <main+17>:	mov    %eax,(%esp)
+   0x80483f5 <main+20>:	call   0x8048310 <atoi@plt>
+   0x80483fa <main+25>:	mov    %eax,0x1c(%esp)
+   0x80483fe <main+29>:	mov    0x1c(%esp),%eax
+   0x8048402 <main+33>:	mov    %eax,0x4(%esp)
+   0x8048406 <main+37>:	mov    0x8(%ebp),%eax
+   0x8048409 <main+40>:	mov    %eax,(%esp)
+(gdb) q
+

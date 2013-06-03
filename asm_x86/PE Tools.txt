@@ -1,0 +1,2 @@
+PE Scrambler (rnicrosoft.net)
+- Forced JUMP with code rearrangement. 3 -> 1 -> 4 -> 2 

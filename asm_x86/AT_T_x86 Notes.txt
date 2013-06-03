@@ -1,0 +1,40 @@
+AT&T x86 Notes (POSIX Decompiling)
+
+Intel: Destination <- Source(s) 
+  Windows. Think algebra or C: y = 2x + 1; 
+  mov   ebp, esp 
+  add    esp, 0x14 ; (esp = esp + 0x14) 
+
+AT&T: Source(s) -> Destination 
+  *nix/GNU. Think elementary school: 1 + 2 = 3 
+  mov  %esp, %ebp 
+  add   $0x14,%esp 
+
+Registers get a % prefix and immediates get a $ 
+
+#r/m32 values For intel it’s expressed as  
+[base + index*scale + disp]?
+# r/m32 values For AT&T it’s expressed as ?
+disp(base, index, scale)
+
+## The Stack
+
+Stacks tend to be around 0x0012FF6C (windows) / 0xbffff378 (linux)
+
+By convention the stack grows toward lower memory addresses. A stack is a Last-In-First-Out (LIFO/FILO) 
+
+4 byte Integer / Hex Display / 1 Column - ANSI (Follow ESP as current or EBP as a Function)
+
+##Instructions / Code 
+
+This is the Code.. PUSH POP ect.. things to do, not the Stack storage variables
+
+Instructions tend to put them around 0x00401010 (windows) / 0x80483c4 (linux)
+
+
+
+
+
+
+
+ß

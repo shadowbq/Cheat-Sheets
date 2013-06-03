@@ -66,19 +66,19 @@ EDI - Destination pointer for string operations 
 The entire usable BUF is also pre-filled with 0x0CCCCCCC when initialized as well.
 RTC_CheckStackVars is the sanity check for the buffer at function return/teardown.
 
-Stack::
+## The Stack
 
-Stacks tend to be around (0x0012FF6C)
+Stacks tend to be around 0x0012FF6C (windows) / 0xbffff378 (linux)
 
 By convention the stack grows toward lower memory addresses. A stack is a Last-In-First-Out (LIFO/FILO) 
 
 4 byte Integer / Hex Display / 1 Column - ANSI (Follow ESP as current or EBP as a Function)
 
-Instructions / Code ::
+##Instructions / Code 
 
 This is the Code.. PUSH POP ect.. things to do, not the Stack storage variables
 
-Windows Instructions tend to put them around 0x00401010 
+Instructions tend to put them around 0x00401010 (windows) / 0x80483c4 (linux)
 
 #Powers of 2 (2s Complements)
 
@@ -99,3 +99,8 @@ test & and return
 EDI = 8
 EDX = 0
 ZF = 1
+
+# GCC common way of stack alignment for 16 bit address (AT&T syntax) 
+
+and    $0xfffffff0,%esp
+

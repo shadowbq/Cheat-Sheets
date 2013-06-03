@@ -1,0 +1,39 @@
+# Basic Decompiling
+
+$> objdump -d hello
+
+# Using Intel Syntax with POSIX objdump
+
+$> objdump -d -M intel hello
+
+#Hexdump
+hexdump -C for “canonical” hex & ASCII view 
+–  Use for a quick peek at the hex 
+
+$> hexdump -C hello
+
+#Xdd (Patching)
+xxd - make a hexdump or do the reverse 
+–  Use as a quick and dirty hex editor 
+
+$> xxd hello > hello.dump 
+–  Edit hello.dump 
+$> xxd -r hello.dump > hello 
+
+#Bless (GUI Hex Editor Linux)
+
+#0xED (GUI Hex Editor OSx)
+
+# One of the best GDB GUIs for dissambly
+Insight - A TCL/TK interface to GDB. (More stable than DDD)
+http://sourceware.org/insight/
+
+install on 12.04 Ubuntu (verfied)
+deb http://ppa.launchpad.net/sevenmachines/dev/ubuntu natty main 
+deb-src http://ppa.launchpad.net/sevenmachines/dev/ubuntu natty main 
+
+Update your apt sources:
+sudo apt-get update
+
+Then you can install insight:
+sudo apt-get install insight
